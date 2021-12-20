@@ -1,11 +1,13 @@
 package com.example.films.service;
 
 import com.example.films.entities.Film;
+import com.example.films.processor.Processor;
 import com.example.films.repository.FilmRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class FilmService implements IFilmService<Film>{
@@ -13,10 +15,27 @@ public class FilmService implements IFilmService<Film>{
     @Autowired
     private FilmRepository filmRepository;
 
+    @Autowired
+    private List<Processor> processes;
+
+    public FilmService() {
+    }
+
 
     @Override
     public boolean save(Film film) {
-        return filmRepository.save(film);
+        boolean validation = true;
+        for (Processor p : processes){
+            if(!p.process(film)){
+                validation=false;
+                break;
+            }
+        }
+        if(validation){
+            film.setId(filmRepository.idGenerator());
+            return filmRepository.save(film);
+        }
+        return false;
     }
 
     @Override
@@ -30,7 +49,7 @@ public class FilmService implements IFilmService<Film>{
     }
 
     @Override
-    public List<Film> findAll(String director) {
+    public Set<Film> findAll(String director) {
         if(director!=null){
             return filmRepository.findAll(director);
         }

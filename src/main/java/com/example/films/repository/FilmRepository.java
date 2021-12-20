@@ -4,51 +4,52 @@ import com.example.films.entities.Film;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
 public class FilmRepository {
 
-    private final List<Film> filmsList;
-    static private Integer count = 1;
+    private final Set<Film> filmSet;
+    private static int count = 1;
 
 
     @Autowired
     public FilmRepository() {
-        this.filmsList = new ArrayList<>();
+        this.filmSet = new HashSet<>();
     }
 
     public boolean save(Film film){
-        film.setId(count);
-        count++;
-        return filmsList.add(film);
+        return filmSet.add(film);
+    }
+
+    public int idGenerator(){
+        return count++;
     }
 
     public boolean delete(Integer id){
         Film film = findById(id);
         if(film!=null){
-            return filmsList.remove(film);
+            return filmSet.remove(film);
         }
         return false;
     }
 
     public Film findById(Integer id){
-        return filmsList.stream()
+        return filmSet.stream()
                 .filter(item-> item.getId().equals(id))
                 .findFirst()
                 .orElse(null);
     }
 
-    public List<Film> findAll(){
-        return filmsList;
+    public Set<Film> findAll(){
+        return filmSet;
     }
 
-    public  List<Film> findAll(String director){
-        return filmsList.stream()
+    public  Set<Film> findAll(String director){
+        return filmSet.stream()
                 .filter(item->item.getDirector().contains(director))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     public Film update(Film film){
@@ -65,4 +66,6 @@ public class FilmRepository {
         }
         return item;
     }
+
+
 }

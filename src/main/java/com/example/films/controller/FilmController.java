@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -22,7 +23,7 @@ public class FilmController {
         boolean saved = filmService.save(film);
         if(saved)
             return new ResponseEntity<String>("Filme Cadastrado",HttpStatus.CREATED);
-        return new ResponseEntity<>("Ops! Esse filme já está cadastrado.", HttpStatus.CONFLICT);
+        return new ResponseEntity<>("Ops! Verifique se o filme já está cadastrado ou se a nota está entre 1-5.", HttpStatus.CONFLICT);
     }
 
     @DeleteMapping("/{id}")
@@ -34,8 +35,8 @@ public class FilmController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Film>> findAll(@RequestParam(required = false) String director){
-        return new ResponseEntity<List<Film>>(filmService.findAll(director), HttpStatus.OK);
+    public ResponseEntity<Set<Film>> findAll(@RequestParam(required = false) String director){
+        return new ResponseEntity<>(filmService.findAll(director), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
